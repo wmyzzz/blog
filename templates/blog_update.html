@@ -1,0 +1,74 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %} 创作博客 {% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugin/editor-md/css/editormd.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    <style>
+        .error-msg {
+            color: red;
+            position: absolute;
+        / / 将错误信息绝对定位，固定 font-size: 13 px;
+        }
+
+        /*解决全屏问题*/
+        .editormd-fullscreen{
+            z-index: 1001;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="blog">
+        <div class="title">创作博客</div>
+        <form id="blogForm" method="POST" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name == "content" %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        <div id="editor">
+                            {{ field }}
+                        </div>
+                        <span class="error-msg">{{ field.errors.0 }}</span>
+                    </div>
+                {% else %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        <span class="error-msg">{{ field.errors.0 }}</span>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <button type="submit" class="btn btn-primary">更 新</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'plugin/editor-md/editormd.min.js' %}"></script>
+    <script>
+    $(function () {
+        initEditorMd();
+    })
+        /*
+        初始化markdown编辑器（textare转换为编辑器）
+        */
+        function initEditorMd() {
+            editormd('editor', {
+                placeholder: "请输入内容",
+                height: 500,
+                path: "{% static 'plugin/editor-md/lib/' %}",
+
+            })
+        }
+
+
+    </script>
+{% endblock %}
